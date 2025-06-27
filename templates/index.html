@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soil Erosion</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background-color: #4caf50; /* Green background color */
+      }
+      #calculator-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: 80%;
+        max-width: 600px;
+        margin: auto;
+      }
+      h2 {
+        text-align: center;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input,
+      select {
+        width: calc(100% - 16px);
+        padding: 8px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+      }
+      #result {
+        display: none;
+        margin-top: 20px;
+      }
+  </style>
+</head>
+<body>
+  <div id="calculator-card">
+    <h2>SOIL EROSION</h2>
+
+      <label for="pa">Enter Annual Precipitation:</label>
+      <input type="number" id="pa" />
+
+      <!-- <label for="sand">Percentage of Sand (%):</label>
+      <input type="number" id="sand" /> -->
+
+      <label for="silt">Percentage of Silt (%):</label>
+      <input type="number" id="silt" />
+
+      <label for="clay">Percentage of Clay (%):</label>
+      <input type="number" id="clay" />
+
+      <label for="slopeLength">Slope Length (L):</label>
+      <input type="number" id="slopeLength" />
+
+      <label for="slopeSteepness">Slope Steepness (β):</label>
+      <input type="number" id="slopeSteepness" />
+
+      <label for="cropType">Crop Type:</label>
+      <select id="cropType">
+        <option value="GrainCorn">Grain corn</option>
+        <option value="SilageCornBeansCanola">
+          Silage corn / beans / canola
+        </option>
+        <option value="Cereals">Cereals</option>
+        <option value="SeasonalHorticulturalCrops">
+          Seasonal horticultural crops
+        </option>
+        <option value="FruitTrees">Fruit trees</option>
+        <option value="HayAndPasture">Hay and pasture</option>
+      </select>
+
+      <label for="tillageMethod">Tillage Method:</label>
+      <select id="tillageMethod">
+        <option value="AutumnPlough">Autumn plough</option>
+        <option value="SpringPlough">Spring plough</option>
+        <option value="MulchTillage">Mulch tillage</option>
+        <option value="RidgeTillage">Ridge tillage</option>
+        <option value="ZoneTillage">Zone tillage</option>
+        <option value="NoTill">No-till</option>
+      </select>
+
+      <label for="practiceFactor">Practice Factor:</label>
+      <select id="practiceFactor">
+        <option value="UpDown">Up and down slope</option>
+        <option value="CrossSlope">Cross slope</option>
+        <option value="ContourFarming">Contour farming</option>
+        <option value="StripCroppingCross">Strip cropping (cross slope)</option>
+        <option value="StripCroppingContour">Strip cropping (contour)</option>
+      </select>
+
+      <!-- <label for="conservationPracticeFactor"
+        >Conservation Practice Factor:</label
+      >
+      <input type="number" id="conservationPracticeFactor" />
+
+      <label for="landUseFactor">Land Use Factor:</label>
+      <input type="number" id="landUseFactor" /> -->
+
+      <button onclick="calculateUSLE()">Calculate Soil Loss</button>
+
+      <div id="result">
+        <h3>Calculated Values:</h3>
+        <p id="rValue"></p>
+        <p id="kValue"></p>
+        <p id="lsValue"></p>
+        <p id="cValue"></p>
+        <p id="pValue"></p>
+        <p id="resultValue"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calculateUSLE() {
+      var pa = parseFloat(document.getElementById("pa").value);
+      // var sand = parseFloat(document.getElementById("sand").value);
+      var silt = parseFloat(document.getElementById("silt").value);
+      var clay = parseFloat(document.getElementById("clay").value);
+      var slopeLength = parseFloat(
+        document.getElementById("slopeLength").value
+      );
+      var slopeSteepness = parseFloat(
+        document.getElementById("slopeSteepness").value
+      );
+      var cropType = document.getElementById("cropType").value;
+      var tillageMethod =
+        document.getElementById("tillageMethod").value;
+      var practiceFactor = document.getElementById("practiceFactor").value
+
+      // var conservationPracticeFactor = parseFloat(
+      //   document.getElementById("conservationPracticeFactor").value
+      // );
+      // var landUseFactor = parseFloat(
+      //   document.getElementById("landUseFactor").value
+      // );
+
+      var data = {
+        'pa': pa,
+        // 'sand': sand,
+        'silt': silt,
+        'clay': clay,
+        'slopeLength': slopeLength,
+        'slopeSteepness': slopeSteepness,
+        'cropType': cropType,
+        'tillageMethod': tillageMethod,
+        'practiceFactor': practiceFactor,
+        // 'landUseFactor': landUseFactor
+      };
+
+      fetch('/calculate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      .then(response => response.json())
+      .then(result => {
+        // Display the calculated values
+        document.getElementById('rValue').innerHTML = "R Value: " + result.R.toFixed(2);
+        document.getElementById('kValue').innerHTML = "K Value: " + result.K.toFixed(2);
+        document.getElementById('lsValue').innerHTML = "LS Value: " + result.LS.toFixed(2);
+        document.getElementById('cValue').innerHTML = "C Value: " + result.C.toFixed(2);
+        document.getElementById('pValue').innerHTML = "P Value: " + result.P.toFixed(2);
+        document.getElementById('resultValue').innerHTML = "Soil Loss (A): " + result.soilLoss.toFixed(2) + " tons per acre per year";
+
+        // Display the result section
+        document.getElementById('result').style.display = 'block';
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+    }
+  </script>
+
+</body>
+</html>
